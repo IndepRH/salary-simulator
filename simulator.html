@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Salaire</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gabarito:wght@400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css"> <!-- Link to your CSS file -->
+</head>
+<body>
+
+<div id="salary-simulator">
+    <h2>Calculez votre rémunération nette</h2>
+
+    <form id="simulator-form">
+        <div class="form-grid">
+            <!-- Row 1 -->
+            <div class="form-group">
+                <label for="uec">État civil</label>
+                <select id="uec" name="uec">
+                    <option value="A">Personne seule</option>
+                    <option value="B">Marié(e) et le conjoint ne travaille pas</option>
+                    <option value="C">Marié(e) et les 2 conjoints travaillent</option>
+                    <option value="H">Famille monoparentale</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="udn">Date de naissance</label>
+                <input type="date" id="udn" name="udn" required>
+            </div>
+            <div class="form-group">
+                <label for="uen">Nombre d'enfants à charge</label>
+                <input type="number" id="uen" name="uen" min="0" step="1" value="0" required>
+            </div>
+
+            <!-- Row 2 -->
+            <div class="form-group">
+                <label for="utp">Taux d'activité (en %)</label>
+                <input type="number" id="utp" name="utp" min="1" max="100" step="1" value="100" required>
+            </div>
+             <div class="form-group">
+                <label for="utj">Votre facturation / jour (CHF)*</label>
+                <input type="number" id="utj" name="utj" min="0" step="1" required>
+            </div>
+
+
+            <!-- Row 3 -->
+            <div class="form-group">
+                <label for="ufm">Frais mensuels</label>
+                <input type="number" id="ufm" name="ufm" min="0" step="0.01" value="0" required>
+            </div>
+             <div class="form-group">
+                <label for="usf">Situation fiscale</label>
+                <select id="usf" name="usf">
+                    <option value="resident">Suisse, Résident Suisse</option>
+                    <option value="source">Avec impôt à la source (Genève)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="umr">Commission portage (en %)</label>
+                <input type="number" id="umr" name="umr" min="0" max="100" step="0.1" value="5" required>
+            </div>
+             <!-- LPP Option Removed -->
+
+             <!-- Row 4 (Conditional Canton Selection) Removed -->
+
+          </div>
+
+          <button type="button" id="calculate-button">Calculer ma simulation</button>
+    </form>
+
+    <div id="results-section" style="display: none;">
+        <h3>Simulation de salaire (en CHF)</h3>
+        <div class="table-responsive-wrapper">
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>Rubrique</th>
+                        <th>Annuel</th>
+                        <th>Mensuel</th>
+                        <th>Journalier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Salaire brut</td>
+                        <td id="result-sba-annual"></td>
+                        <td id="result-sba-monthly"></td>
+                        <td id="result-sba-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Salaire net avant impôts (LPP déduite)</td>
+                        <td id="result-net-annual"></td>
+                        <td id="result-net-monthly"></td>
+                        <td id="result-net-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Pour information, Épargne LPP (Empl+Empr)</td>
+                        <td id="result-lpp-saving-annual"></td>
+                        <td id="result-lpp-saving-monthly"></td>
+                        <td id="result-lpp-saving-daily"></td>
+                    </tr>
+                     <tr>
+                        <td>Frais</td>
+                        <td id="result-ufm-annual"></td>
+                        <td id="result-ufm-monthly"></td>
+                        <td id="result-ufm-daily"></td>
+                    </tr>
+                    <tr>
+                        <td id="label-payout">Paiement Consultant (après impôts & frais inclus)</td>
+                        <td id="result-payout-annual"></td>
+                        <td id="result-payout-monthly"></td>
+                        <td id="result-payout-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Prix de revient (Coût employeur)</td>
+                        <td id="result-prs-annual"></td>
+                        <td id="result-prs-monthly"></td>
+                        <td id="result-prs-daily"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tax-info" style="margin-top: 10px; font-style: italic;">
+             <span id="tax-rate-info"></span>
+             <span id="exchange-rate-info" style="margin-left: 20px;"></span>
+        </div>
+
+
+        <h4 style="margin-top: 30px;">Simulation du bulletin de salaire mensuel (CHF)</h4>
+        <div class="table-responsive-wrapper">
+            <table id="payslip-table">
+                 <thead>
+                    <tr>
+                        <th>Rubrique</th>
+                        <th>Base</th>
+                        <th>Taux Employé</th>
+                        <th>Montant Employé</th>
+                        <th>Taux Employeur</th>
+                        <th>Montant Employeur</th>
+                    </tr>
+                </thead>
+                 <tbody>
+                    <!-- Rows will be populated by JavaScript -->
+                 </tbody>
+            </table>
+        </div>
+         <div id="calculation-error" style="color: red; margin-top: 15px;"></div>
+    </div>
+</div>
+
+<script src="config.js"></script> <!-- Load configuration first -->
+<script src="tax_data.js"></script><!-- Charger les données fiscales -->
+<script src="simulator.js"></script> <!-- Load the main logic -->
+
+</body>
+</html>

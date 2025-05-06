@@ -1,0 +1,185 @@
+/* style.css - Basic Styling */
+:root {
+    --primary-color: #FF5E5D; /* Rouge/Rose Vif */
+    --secondary-color: #FFDDDF; /* Rose Pâle */
+    --dark-bg: #000618;      /* Bleu Nuit Très Foncé */
+    --text-color: #232323;     /* Gris Foncé (pour le texte principal) */
+    --text-light: #555;      /* Gris plus clair pour labels, etc. */
+    --background-light: #f8f9fa; /* Fond clair (alternative à blanc pur) */
+    --border-color: #ddd;       /* Couleur de bordure standard */
+    --table-header-bg: #f2f2f2; /* Fond en-tête tableau (peut être changé) */
+}
+
+body {
+    font-family: 'Gabarito', sans-serif; /* Nouvelle police */
+    line-height: 1.6;
+    margin: 0; /* Enlever marge par défaut */
+    padding: 20px; /* Ajouter padding global */
+    background-color: var(--background-light); /* Utilisation variable */
+    color: var(--text-color); /* Couleur texte par défaut */
+}
+
+#salary-simulator {
+    background-color: #fff; /* Garder blanc pour la carte principale */
+    padding: 25px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    margin: auto;
+}
+
+h2, h3, h4 {
+    color: var(--dark-bg); /* Utiliser le bleu nuit pour les titres */
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    gap: 20px;
+    margin-bottom: 25px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 5px;
+    font-weight: bold;
+    color: var(--text-light); /* Utiliser gris clair pour labels */
+}
+
+.form-group input[type="text"],
+.form-group input[type="number"],
+.form-group input[type="date"],
+.form-group select {
+    padding: 10px;
+    border: 1px solid var(--border-color); /* Utiliser variable bordure */
+    border-radius: 4px;
+    font-size: 1rem;
+    background-color: #fff; /* Fond blanc pour les inputs */
+    color: var(--text-color); /* Texte des inputs */
+}
+
+#calculate-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background-color: var(--primary-color); /* Couleur primaire pour le bouton */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 20px;
+    font-weight: bold;
+}
+
+#calculate-button:hover {
+    background-color: #e04a49; /* Assombrir légèrement la couleur primaire au survol */
+}
+
+#results-section {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    border: 1px solid var(--border-color);
+    padding: 8px;
+    text-align: left;
+}
+
+th {
+    background-color: var(--secondary-color); /* Utiliser le rose pâle pour l'en-tête */
+    font-weight: bold;
+    color: var(--dark-bg); /* Texte foncé sur fond pâle */
+}
+
+td:nth-child(n+2) { /* Align numbers to the right */
+    text-align: right;
+}
+
+#payslip-table td:nth-child(3), /* Taux Employee */
+#payslip-table td:nth-child(5) /* Taux Employer */
+{
+    text-align: center;
+}
+
+#tax-info {
+    font-size: 0.9em;
+    color: var(--text-light);
+}
+
+#calculation-error {
+    font-weight: bold;
+    color: var(--primary-color); /* Erreur en couleur primaire */
+}
+
+/* Responsive Design */
+.table-responsive-wrapper {
+    width: 100%;
+    overflow-x: auto; /* Enable horizontal scroll on demand */
+    -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+    margin-bottom: 15px; /* Add some space below scrolled tables */
+}
+
+@media (max-width: 768px) {
+    body {
+        padding: 10px; /* Reduce body padding */
+    }
+
+    #salary-simulator {
+        padding: 15px; /* Reduce card padding */
+    }
+
+    h2 {
+        font-size: 1.5rem; /* Slightly smaller main title */
+    }
+
+    h3 {
+        font-size: 1.3rem;
+    }
+
+    h4 {
+        font-size: 1.1rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr; /* Force single column for form items */
+        gap: 15px; /* Reduce gap */
+    }
+
+    /* Ensure tables within the wrapper don't force width unnecessarily */
+    .table-responsive-wrapper table {
+        min-width: 600px; /* Example: Set a min-width if content requires it */
+        /* Adjust min-width based on your table content to ensure readability */
+    }
+}
+
+@media (max-width: 480px) {
+    h2 {
+        font-size: 1.3rem;
+    }
+    h3 {
+        font-size: 1.1rem;
+    }
+    h4 {
+        font-size: 1rem;
+    }
+    .table-responsive-wrapper table {
+        min-width: 500px; /* Further adjust for very small screens if needed */
+    }
+
+}
