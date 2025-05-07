@@ -82,7 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
             if (numberFields.includes(id)) { value = parseFloat(value); if (isNaN(value) || value < (id === 'utp' ? 1 : 0) || (id === 'utp' && value > 100) || ((id === 'umr') && (value < 0 || value > 100)) ) { alert(`Valeur invalide: ${element.previousElementSibling?.textContent || id}. Vérifiez min/max.`); element.style.border = '1px solid red'; isValid = false; } else if (id === 'ufm' && value < 0) { alert(`Frais >= 0`); element.style.border = '1px solid red'; isValid = false; } }
             data[id] = value; });
         if (!isValid) return null;
-        try { const birthDate = new Date(data.udn); const today = new Date(); data.age = today.getFullYear() - birthDate.getFullYear(); const m = today.getMonth() - birthDate.getMonth(); if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { data.age--; } if (isNaN(data.age) || data.age < 0) throw new Error("Invalid age"); } catch (e) { alert('Date naissance invalide.'); document.getElementById('udn').style.border = '1px solid red'; return null; }
+        try { const birthDate = new Date(data.udn); const today = new Date(); data.age = today.getFullYear() - birthDate.getFullYear(); const m = today.getMonth() - birthDate.getMonth(); if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { data.age--; } if (isNaN(data.age) || data.age < 0) throw new Error("Invalid age");
+            // Vérification de l'âge minimum
+            if (data.age < 18) {
+                alert("L'âge minimum requis est de 18 ans.");
+                document.getElementById('udn').style.border = '1px solid red';
+                isValid = false; // Marquer comme invalide si l'âge est incorrect
+                return null; // Retourner null pour arrêter le traitement
+            }
+        } catch (e) { alert('Date naissance invalide.'); document.getElementById('udn').style.border = '1px solid red'; return null; }
         data.utj_chf = data.utj;
         return data;
     }
