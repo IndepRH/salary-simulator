@@ -302,6 +302,25 @@ document.addEventListener('DOMContentLoaded', () => {
             payoutLabelElement.textContent = 'Paiement Consultant (après impôt source & frais inclus)';
         }
 
+        // ---- AJOUT POUR CONGES PAYES ----
+        // Utilisation du paramètre CONFIG.J02 pour le nombre de jours de congés
+        const paidLeaveDays = (CONFIG.J02 || 0) * (inputs.utp / 100);
+        let paidLeaveInfoElement = document.getElementById('paid-leave-info'); // Utiliser un ID spécifique
+
+        if (!paidLeaveInfoElement) {
+            paidLeaveInfoElement = document.createElement('div'); // 'div' pour occuper toute la largeur
+            paidLeaveInfoElement.id = 'paid-leave-info';
+            // taxInfoDiv et taxRateInfoSpan sont récupérés au début du script global DOMContentLoaded.
+            if (taxInfoDiv && taxRateInfoSpan) {
+                taxInfoDiv.insertBefore(paidLeaveInfoElement, taxRateInfoSpan);
+            } else if (taxInfoDiv) { // Fallback: si taxRateInfoSpan n'est pas là (ne devrait pas arriver)
+                taxInfoDiv.appendChild(paidLeaveInfoElement); // Ajoute à la fin de taxInfoDiv
+            }
+        }
+        // Formatter le nombre de jours avec un point décimal si nécessaire, et une décimale max.
+        paidLeaveInfoElement.textContent = `Congés payés par an: ${paidLeaveDays.toLocaleString('en-US', { maximumFractionDigits: 1 })} jours`;
+        // ---- FIN AJOUT POUR CONGES PAYES ----
+
         // Canton fixed to GE in display
         taxRateInfoSpan.textContent = ''; if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) { taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`; } else if (inputs.usf === 'source') { taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE) - Taux 0%/non trouvé.`; }
         // Display the user-defined target margin
