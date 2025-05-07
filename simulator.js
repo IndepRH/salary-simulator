@@ -267,13 +267,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Fonction d'affichage des résultats (inchangée)
     function displayResults(sba, deductions, inputs, annualTurnover, annualExpenses) {
         const workingDays = CONFIG.J01 - CONFIG.J02;
+        const activityRate = inputs.utp / 100; // Taux d'activité en décimal
+        const adjustedWorkingDays = workingDays * activityRate; // Jours de travail ajustés
+
         const netAnnualBeforeTax = sba - (deductions.totalEmployeeAnnual - (deductions.details['TAX']?.emplAmount || 0));
         const lppSavingAnnual = (deductions.details['T11']?.emplAmount || 0) + (deductions.details['T11']?.emprAmount || 0);
         const payoutAnnual = netAnnualBeforeTax - (deductions.details['TAX']?.emplAmount || 0) + annualExpenses;
         const prsAnnual = sba + deductions.totalEmployerAnnual; const totalCompanyCost = prsAnnual + annualExpenses;
         const actualMargin = (annualTurnover > 0) ? (1 - totalCompanyCost / annualTurnover) : 0;
         const formatCHF = (v) => v != null ? v.toLocaleString('fr-CH', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
-        const formatDaily = (v) => workingDays > 0 && v != null ? formatCHF(v / workingDays) : 'N/A';
+        const formatDaily = (v) => adjustedWorkingDays > 0 && v != null ? formatCHF(v / adjustedWorkingDays) : 'N/A';
         const formatPercent = (v, d = 3) => v != null ? (v * 100).toFixed(d) + '%' : '-';
 
         document.getElementById('result-sba-annual').textContent = formatCHF(sba); document.getElementById('result-sba-monthly').textContent = formatCHF(sba / 12); document.getElementById('result-sba-daily').textContent = formatDaily(sba);
