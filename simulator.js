@@ -116,14 +116,23 @@ document.addEventListener('DOMContentLoaded', () => {
         let totalEmployeeAnnual = 0;
         let totalEmployerAnnual = 0;
 
-        // Calculs Préliminaires LPP (inchangés)
-        const lppBaseSalary = Math.min(sba, CONFIG.M01);
-        const lppCoordinationDeduction = CONFIG.M02;
-        const lppEntryThreshold = CONFIG.M03;
+        // Calculs Préliminaires LPP
+        const lppBaseSalary = Math.min(sba, CONFIG.M01); // Salaire LPP de base, plafonné à M01
         let salaireCoordonne = 0;
-        if (sba >= lppEntryThreshold) {
-             salaireCoordonne = Math.max(0, lppBaseSalary - lppCoordinationDeduction);
+
+        if (sba >= CONFIG.M03) { // Si le salaire est au moins au seuil d'entrée LPP (M03)
+            if (sba < CONFIG.M02) {
+                // NOUVELLE REGLE: Pour les salaires entre M03 (inclus) et M02 (exclu)
+                // Le salaire coordonné est la différence entre la déduction de coordination et le seuil d'entrée.
+                salaireCoordonne = CONFIG.M02 - CONFIG.M03;
+            } else {
+                // REGLE EXISTANTE: Pour les salaires supérieurs ou égaux à M02 (et M03)
+                // Le salaire coordonné est le salaire LPP de base moins la déduction de coordination.
+                salaireCoordonne = Math.max(0, lppBaseSalary - CONFIG.M02);
+            }
         }
+        // Si sba < CONFIG.M03, salaireCoordonne reste à 0 (initialisé ci-dessus)
+
         let lppEmprRateTRx = 0;
         if (inputs.age >= 18) {
              const applicableRateEntry = CONFIG.TR.slice().reverse().find(tr => inputs.age >= tr.age_start);
@@ -137,7 +146,7 @@ document.addEventListener('DOMContentLoaded', () => {
             switch(item.baseRule) {
                 case 'sba': base = sba; break;
                 case 'min(sba, M04)': base = Math.min(sba, CONFIG.M04); break;
-                case 'lppCoord': base = (sba >= lppEntryThreshold) ? salaireCoordonne : 0; break;
+                case 'lppCoord': base = (sba >= CONFIG.M03) ? salaireCoordonne : 0; break;
                 default: base = sba;
             }
             let actualEmplRate = item.empl || 0;

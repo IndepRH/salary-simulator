@@ -9,7 +9,7 @@ const CONFIG = {
     // Margin (Marge)
     R01: 0.07, // Marge brute (7%)
     // D01 renommé en RelativeTolerance
-    RelativeTolerance: 0.005, // Tolérance relative pour le calcul itératif (0.5%)
+    RelativeTolerance: 0.0005, // Tolérance relative pour le calcul itératif (0.5%)
 
     // LPP Fees (Frais LPP)
     F01: 300.00, // Frais administratifs LPP (annuel)
@@ -39,7 +39,7 @@ const CONFIG = {
     T07: { name: "LAA non professionnelle", empl: 0.00000, empr: 0.00730, baseRule: 'min(sba, M04)' }, // Charge employeur
     T08: { name: "LAA professionnelle",   empl: 0.00000, empr: 0.001092, baseRule: 'min(sba, M04)' }, // Taux corrigé
     T09: { name: "Assurance IJM (APG Maladie)", empl: 0.00000, empr: 0.03660, baseRule: 'min(sba, M04)' }, // Example rate
-    T10: { name: "Formation / CCT",    empl: 0.00000, empr: 0.01000, baseRule: 'min(sba, M04)' }, // Taux -> 0 si SBA>M04 (géré in JS)
+    T10: { name: "Formation / CCT",    empl: 0.00000, empr: 0.00800, baseRule: 'min(sba, M04)' }, // Taux -> 0 si SBA>M04 (géré in JS)
 
     // LPP Taux employé de 3% SI l'option N'EST PAS Standard
     T11: { name: "LPP Épargne Complément", empl: 0.03000, empr: 0.00000, baseRule: 'lppCoord', condition: 'uof !== "Standard"' },
