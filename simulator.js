@@ -283,7 +283,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const payoutAnnual = netAnnualBeforeTax - (deductions.details['TAX']?.emplAmount || 0) + annualExpenses;
         const prsAnnual = sba + deductions.totalEmployerAnnual; const totalCompanyCost = prsAnnual + annualExpenses;
         const actualMargin = (annualTurnover > 0) ? (1 - totalCompanyCost / annualTurnover) : 0;
-        const formatCHF = (v) => v != null ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) : '0.00';
+        const formatCHF = (v) => v != null ? v.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).replace(/,/g, "'") : '0.00';
         const formatDaily = (v) => adjustedWorkingDays > 0 && v != null ? formatCHF(v / adjustedWorkingDays) : 'N/A';
         const formatPercent = (v, d = 3) => v != null ? (v * 100).toFixed(d) + '%' : '-';
 
