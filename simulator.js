@@ -12,6 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taxInfoDiv = document.getElementById('tax-info');
     const taxRateInfoSpan = document.getElementById('tax-rate-info');
     const exchangeRateInfoSpan = document.getElementById('exchange-rate-info');
+    const additionalInfoSection = document.getElementById('additional-info-section');
 
     // Lancer la simulation au clic
     calculateButton.addEventListener('click', runSimulation);
@@ -27,6 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Reset UI
         errorDiv.textContent = '';
         resultsSection.style.display = 'none';
+        additionalInfoSection.style.display = 'none';
 
         const inputs = getInputs();
         if (!inputs) {
@@ -60,6 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Affichage des résultats
                 displayResults(finalSBA, finalDeductions, inputs, annualTurnover, annualExpenses);
                 resultsSection.style.display = 'block';
+                additionalInfoSection.style.display = 'block';
                  console.log(`Converged in ${iterations} iterations. Final SBA: ${finalSBA.toFixed(2)}, Final Total Cost: ${(finalSBA + finalDeductions.totalEmployerAnnual + annualExpenses).toFixed(2)}`);
             } else {
                  // Non convergence
@@ -70,6 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
             console.error("Erreur pendant la simulation:", error);
             errorDiv.textContent = `Erreur lors du calcul : ${error.message}`;
             resultsSection.style.display = 'none';
+            additionalInfoSection.style.display = 'none';
         }
     }
 
