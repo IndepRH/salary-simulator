@@ -28,6 +28,13 @@ body {
     margin: 0; /* Ajuster la marge si nécessaire, ou la laisser à auto si le parent gère le centrage */
 }
 
+#simulator-form { /* Nouveau style pour le formulaire */
+    max-width: 1100px; /* Largeur max pour le contenu du formulaire */
+    margin-left: auto;
+    margin-right: auto;
+    /* margin-bottom: 25px;  /* Le bouton est après le grid, donc le margin-bottom du grid est ok */
+}
+
 h2, h3, h4 {
     color: var(--dark-bg); /* Utiliser le bleu nuit pour les titres */
     text-align: center;
@@ -36,9 +43,22 @@ h2, h3, h4 {
 
 .form-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
+    /* grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Responsive grid */
     gap: 20px;
     margin-bottom: 25px;
+    grid-template-columns: 1fr; /* Défaut pour mobile : 1 colonne */
+}
+
+@media (min-width: 600px) { /* Pour les tablettes et petits écrans desktop */
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr); /* 2 colonnes */
+    }
+}
+
+@media (min-width: 992px) { /* Pour les écrans desktop plus larges */
+    .form-grid {
+        grid-template-columns: repeat(4, 1fr); /* 4 colonnes */
+    }
 }
 
 .form-group {
