@@ -100,7 +100,7 @@ h2, h3, h4 {
 }
 
 #calculate-button:hover {
-    background-color: #e04a49; /* Assombrir légèrement la couleur primaire au survol */
+    background-color: #ff7f7e; /* Éclaircir la couleur primaire au survol */
 }
 
 #results-section {
