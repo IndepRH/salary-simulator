@@ -42,34 +42,27 @@ document.addEventListener('DOMContentLoaded', () => {
                  throw new Error("Chiffre d'affaires annuel invalide (vérifiez tarif/jours).");
             }
 
-            // Recherche itérative du SBA (synchrone)
-            // Pass user margin to findSBA if needed, or use it directly here
-            const userMarginRateDecimal = inputs.umr / 100; // Convert percentage to decimal
-            const tsc = annualTurnover * (1 - userMarginRateDecimal); // Use user margin
-            const annualExpenses = inputs.ufm * 12; // Frais annuels
-            const targetSalaryCost = tsc - annualExpenses; // Cible pour (SBA + Charges Patronales)
-            console.log(`Annual Turnover: ${annualTurnover.toFixed(2)}, User Margin: ${(userMarginRateDecimal * 100).toFixed(1)}%, TSC: ${tsc.toFixed(2)}, Annual Expenses: ${annualExpenses.toFixed(2)}, Target Salary Cost: ${targetSalaryCost.toFixed(2)}`);
-
+            const userMarginRateDecimal = inputs.umr / 100;
+            const tsc = annualTurnover * (1 - userMarginRateDecimal);
+            const annualExpenses = inputs.ufm * 12;
+            const targetSalaryCost = tsc - annualExpenses;
+            // console.log(`Annual Turnover: ${annualTurnover.toFixed(2)}, User Margin: ${(userMarginRateDecimal * 100).toFixed(1)}%, TSC: ${tsc.toFixed(2)}, Annual Expenses: ${annualExpenses.toFixed(2)}, Target Salary Cost: ${targetSalaryCost.toFixed(2)}`);
 
             if (targetSalaryCost <= 0) {
                  throw new Error(`Frais mensuels (${inputs.ufm} CHF) trop élevés par rapport au chiffre d'affaires disponible après marge.`);
             }
 
-            // Recherche itérative du SBA (synchrone)
             const { finalSBA, finalDeductions, iterations, converged } = findSBA(targetSalaryCost, inputs);
 
             if (converged && finalSBA != null && finalDeductions) {
-                // Affichage des résultats
                 displayResults(finalSBA, finalDeductions, inputs, annualTurnover, annualExpenses);
                 resultsSection.style.display = 'block';
                 additionalInfoSection.style.display = 'block';
-                 console.log(`Converged in ${iterations} iterations. Final SBA: ${finalSBA.toFixed(2)}, Final Total Cost: ${(finalSBA + finalDeductions.totalEmployerAnnual + annualExpenses).toFixed(2)}`);
+                // console.log(`Converged in ${iterations} iterations. Final SBA: ${finalSBA.toFixed(2)}, Final Total Cost: ${(finalSBA + finalDeductions.totalEmployerAnnual + annualExpenses).toFixed(2)}`);
             } else {
-                 // Non convergence
                  throw new Error(`Le calcul n'a pas convergé après ${iterations} itérations. Essayez un tarif différent ou vérifiez les paramètres.`);
             }
         } catch (error) {
-            // Gestion des erreurs
             console.error("Erreur pendant la simulation:", error);
             errorDiv.textContent = `Erreur lors du calcul : ${error.message}`;
             resultsSection.style.display = 'none';
@@ -132,23 +125,33 @@ document.addEventListener('DOMContentLoaded', () => {
         const lppBaseSalary = Math.min(sba, CONFIG.M01); // Salaire LPP de base, plafonné à M01
         let salaireCoordonne = 0;
 
-        if (sba >= CONFIG.M03) { // Si le salaire est au moins au seuil d'entrée LPP (M03)
-            if (sba < CONFIG.M02) {
-                // NOUVELLE REGLE: Pour les salaires entre M03 (inclus) et M02 (exclu)
-                // Le salaire coordonné est la différence entre la déduction de coordination et le seuil d'entrée.
-                salaireCoordonne = CONFIG.M02 - CONFIG.M03;
+        // --- Début Logique LPP (Nouvelle règle pour bas salaires) ---
+        const seuilDeclenchementLPP = CONFIG.M03;
+        const deductionCoordinationLPP = CONFIG.M02;
+        const baseLPPMinimaleFixe = deductionCoordinationLPP - seuilDeclenchementLPP;
+        // Le plafond pour appliquer la base LPP minimale fixe est: M02 + (M02 - M03)
+        const plafondBasSalairePourBaseFixe = deductionCoordinationLPP + baseLPPMinimaleFixe;
+
+        if (sba >= seuilDeclenchementLPP) { // Uniquement si le salaire atteint le seuil LPP
+            if (sba < plafondBasSalairePourBaseFixe) {
+                // Cas: sba >= M03 ET sba < (M02 + (M02 - M03))
+                // Le salaire coordonné est la base LPP minimale fixe.
+                salaireCoordonne = baseLPPMinimaleFixe;
             } else {
-                // REGLE EXISTANTE: Pour les salaires supérieurs ou égaux à M02 (et M03)
-                // Le salaire coordonné est le salaire LPP de base moins la déduction de coordination.
-                salaireCoordonne = Math.max(0, lppBaseSalary - CONFIG.M02);
+                // Cas: sba >= (M02 + (M02 - M03))
+                // Le salaire coordonné est le salaire LPP (plafonné à M01) moins la déduction de coordination M02.
+                salaireCoordonne = Math.max(0, lppBaseSalary - deductionCoordinationLPP);
             }
         }
-        // Si sba < CONFIG.M03, salaireCoordonne reste à 0 (initialisé ci-dessus)
+        // Si sba < seuilDeclenchementLPP (M03), salaireCoordonne reste à 0 (valeur initiale)
+        // --- Fin Logique LPP ---
 
         let lppEmprRateTRx = 0;
-        if (inputs.age >= 18) {
+        if (inputs.age >= 18) { // Assurez-vous que inputs.age est bien calculé et disponible
              const applicableRateEntry = CONFIG.TR.slice().reverse().find(tr => inputs.age >= tr.age_start);
-             if(applicableRateEntry && inputs.age >= 25) { lppEmprRateTRx = applicableRateEntry.rate; }
+             if(applicableRateEntry && inputs.age >= 25) { // Les cotisations d'épargne LPP commencent à 25 ans
+                lppEmprRateTRx = applicableRateEntry.rate;
+             }
         }
 
         // Boucle sur les cotisations Txx (inchangée dans sa structure globale)
@@ -207,19 +210,19 @@ document.addEventListener('DOMContentLoaded', () => {
             // Logique de détermination du barème (corrigée)
             if (uecLetter === 'A') {
                 withholdingTaxBarème = 'A0'; // Toujours A0 si état civil 'A'
-                console.log(`IS Rule: UEC 'A' -> Bareme A0 (ignoring ${numChildren} children for code).`);
+                // console.log(`IS Rule: UEC 'A' -> Bareme A0 (ignoring ${numChildren} children for code).`);
             } else if (uecLetter === 'H') {
                 withholdingTaxBarème = `H${numChildren}`; // H + nb enfants
-                console.log(`IS Rule: UEC 'H' -> Bareme H${numChildren}.`);
+                // console.log(`IS Rule: UEC 'H' -> Bareme H${numChildren}.`);
             } else if (uecLetter === 'B' || uecLetter === 'C') {
                 withholdingTaxBarème = `${uecLetter}${numChildren}`; // B ou C + nb enfants
-                console.log(`IS Rule: UEC '${uecLetter}' -> Bareme ${uecLetter}${numChildren}.`);
+                // console.log(`IS Rule: UEC '${uecLetter}' -> Bareme ${uecLetter}${numChildren}.`);
             } else {
                 console.error(`État civil inconnu pour IS: ${inputs.uec}`);
                 withholdingTaxBarème = 'A0'; // Fallback simple
             }
 
-            console.log(`Determined withholding tax bareme: ${withholdingTaxBarème}`);
+            // console.log(`Determined withholding tax bareme: ${withholdingTaxBarème}`);
 
             // Calcul du taux et du montant (inchangé)
             const monthlyGross = sba / 12;
@@ -298,7 +301,6 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('result-payout-annual').textContent = formatCHF(payoutAnnual); document.getElementById('result-payout-monthly').textContent = formatCHF(payoutAnnual / 12); document.getElementById('result-payout-daily').textContent = formatDaily(payoutAnnual);
         document.getElementById('result-prs-annual').textContent = formatCHF(totalCompanyCost); document.getElementById('result-prs-monthly').textContent = formatCHF(totalCompanyCost / 12); document.getElementById('result-prs-daily').textContent = formatDaily(totalCompanyCost);
 
-        // Dynamically update the payout label based on tax situation
         const payoutLabelElement = document.getElementById('label-payout');
         if (inputs.usf === 'resident') {
             payoutLabelElement.textContent = 'Paiement Consultant (avant impôts directs & frais inclus)';
@@ -325,7 +327,6 @@ document.addEventListener('DOMContentLoaded', () => {
         paidLeaveInfoElement.textContent = `Congés payés par an: ${paidLeaveDays.toLocaleString('en-US', { maximumFractionDigits: 1 })} jours`;
         // ---- FIN AJOUT POUR CONGES PAYES ----
 
-        // Canton fixed to GE in display
         taxRateInfoSpan.textContent = ''; 
         if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) { 
             taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`; 
@@ -333,33 +334,10 @@ document.addEventListener('DOMContentLoaded', () => {
             taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE) - Taux 0%/non trouvé.`; 
         }
 
-        // Display the user-defined target margin
         const userMarginPercentage = inputs.umr;
         exchangeRateInfoSpan.textContent = `Marge brute calculée: ${formatPercent(actualMargin, 2)} (Marge Cible: ${userMarginPercentage.toFixed(1)}%)`;
 
-        // payslipTableBody.innerHTML = ''; // Commenté car le tableau n'est plus affiché
-        // const deductionOrder = ['T01', 'T02', 'T03', 'T04', 'T05', 'T06', 'T07', 'T08', 'T09', 'T11', 'T12', 'F01', 'T10', 'TAX'];
-        // deductionOrder.forEach(id => { 
-        //     const detail = deductions.details[id]; 
-        //     if (!detail) { return; } 
-        //     const alwaysShow = ['T11', 'T12', 'TAX', 'T03', 'F01', 'T10']; 
-        //     if (detail.emplAmount === 0 && detail.emprAmount === 0 && !alwaysShow.includes(id)) { return; } // Ne pas afficher si montants nuls et pas dans alwaysShow
-        //     const row = payslipTableBody.insertRow(); 
-        //     row.insertCell().textContent = detail.name; 
-        //     row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatCHF(detail.base / 12); 
-        //     row.insertCell().textContent = formatPercent(detail.emplRate); 
-        //     row.insertCell().textContent = formatCHF(detail.emplAmount / 12); 
-        //     row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatPercent(detail.emprRate); 
-        //     row.insertCell().textContent = formatCHF(detail.emprAmount / 12); 
-        // });
-        // const totalRow = payslipTableBody.insertRow(); 
-        // totalRow.style.fontWeight = 'bold'; 
-        // totalRow.insertCell().textContent = 'Total Déductions'; 
-        // totalRow.insertCell().textContent = ''; 
-        // totalRow.insertCell().textContent = ''; 
-        // totalRow.insertCell().textContent = formatCHF(deductions.totalEmployeeAnnual / 12); 
-        // totalRow.insertCell().textContent = ''; 
-        // totalRow.insertCell().textContent = formatCHF(deductions.totalEmployerAnnual / 12);
+        // Le code pour payslipTableBody a été supprimé car la table n'est plus affichée.
     }
 
 }); // Fin du DOMContentLoaded
