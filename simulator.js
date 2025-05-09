@@ -14,8 +14,48 @@ document.addEventListener('DOMContentLoaded', () => {
     const exchangeRateInfoSpan = document.getElementById('exchange-rate-info');
     const additionalInfoSection = document.getElementById('additional-info-section');
 
+    const fieldIds = ['uec', 'udn', 'uen', 'utp', 'utj', 'ufm', 'usf', 'umr'];
+
+    const FIELD_ERROR_MESSAGES = {
+        genericFieldMissing: "Ce champ est requis.",
+        udnRequired: "La date de naissance est requise.",
+        udnInvalid: "Date de naissance invalide.",
+        udnAgeMinimum: "L'âge minimum requis est de 18 ans.",
+        mustBeNumber: (label) => `La valeur pour '${label}' doit être un nombre.`,
+        mustBeInteger: (label) => `La valeur pour '${label}' doit être un nombre entier.`,
+        minValue: (label, min) => `Minimum pour '${label}': ${min}.`,
+        maxValue: (label, max) => `Maximum pour '${label}': ${max}.`,
+        ufmPositive: "Les frais mensuels doivent être supérieurs ou égaux à 0."
+    };
+
     // Lancer la simulation au clic
     calculateButton.addEventListener('click', runSimulation);
+
+    function clearFieldValidationErrors() {
+        fieldIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.classList.remove('invalid');
+            }
+            const errorElement = document.getElementById(`${id}-error`);
+            if (errorElement) {
+                errorElement.textContent = '';
+                errorElement.style.display = 'none';
+            }
+        });
+    }
+
+    function displayFieldValidationError(fieldId, message) {
+        const element = document.getElementById(fieldId);
+        if (element) {
+            element.classList.add('invalid');
+        }
+        const errorElement = document.getElementById(`${fieldId}-error`);
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+    }
 
     // Fonction utilitaire pour calculer le CA annuel
     function calculateAnnualTurnover(inputs) {
@@ -25,14 +65,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction principale de simulation (synchrone)
     function runSimulation() {
-        // Reset UI
+        clearFieldValidationErrors();
         errorDiv.textContent = '';
         resultsSection.style.display = 'none';
         additionalInfoSection.style.display = 'none';
 
         const inputs = getInputs();
         if (!inputs) {
-            errorDiv.textContent = 'Veuillez corriger les erreurs dans le formulaire.';
+            // Les erreurs de champ sont déjà affichées par getInputs via displayFieldValidationError
+            // On pourrait ajouter un message global si nécessaire, mais souvent ce n'est pas utile
+            // errorDiv.textContent = 'Veuillez corriger les erreurs dans le formulaire.';
+            const firstInvalidField = form.querySelector('.invalid');
+            if (firstInvalidField) {
+                firstInvalidField.focus();
+            }
             return;
         }
 
@@ -72,23 +118,151 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction pour récupérer et valider les inputs (inchangée)
     function getInputs() {
-        let isValid = true; const data = {}; const fields = ['uec', 'udn', 'uen', 'utp', 'utj', 'ufm', 'usf', 'umr'];
+        let isValid = true;
+        const data = {};
+        // Note: fieldIds est défini globalement dans le scope du DOMContentLoaded
         const numberFields = ['uen', 'utp', 'utj', 'ufm', 'umr'];
-        fields.forEach(id => { const element = document.getElementById(id); if (!element) { console.error(`${id} not found!`); isValid = false; return; } element.style.border = '1px solid #ccc'; let value = element.value;
-            if (id === 'udn' && !value) { alert('Date naissance?'); element.style.border = '1px solid red'; isValid = false; }
-            if (numberFields.includes(id)) { value = parseFloat(value); if (isNaN(value) || value < (id === 'utp' ? 1 : 0) || (id === 'utp' && value > 100) || ((id === 'umr') && (value < 0 || value > 100)) ) { alert(`Valeur invalide: ${element.previousElementSibling?.textContent || id}. Vérifiez min/max.`); element.style.border = '1px solid red'; isValid = false; } else if (id === 'ufm' && value < 0) { alert(`Frais >= 0`); element.style.border = '1px solid red'; isValid = false; } }
-            data[id] = value; });
-        if (!isValid) return null;
-        try { const birthDate = new Date(data.udn); const today = new Date(); data.age = today.getFullYear() - birthDate.getFullYear(); const m = today.getMonth() - birthDate.getMonth(); if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) { data.age--; } if (isNaN(data.age) || data.age < 0) throw new Error("Invalid age");
-            // Vérification de l'âge minimum
-            if (data.age < 18) {
-                alert("L'âge minimum requis est de 18 ans.");
-                document.getElementById('udn').style.border = '1px solid red';
-                isValid = false; // Marquer comme invalide si l'âge est incorrect
-                return null; // Retourner null pour arrêter le traitement
+
+        fieldIds.forEach(id => {
+            const element = document.getElementById(id);
+            if (!element) {
+                console.error(`Élément de formulaire ${id} non trouvé!`);
+                // Cette erreur est critique pour le développeur, ne devrait pas arriver.
+                // On ne peut pas afficher d'erreur de champ si le champ lui-même manque.
+                isValid = false; 
+                return; 
             }
-        } catch (e) { alert('Date naissance invalide.'); document.getElementById('udn').style.border = '1px solid red'; return null; }
-        data.utj_chf = data.utj;
+            
+            let value = element.value.trim(); 
+            const label = element.previousElementSibling?.textContent || element.name || id;
+
+            // 1. Vérification des champs requis générique
+            if (element.required && !value) {
+                displayFieldValidationError(id, FIELD_ERROR_MESSAGES.genericFieldMissing);
+                isValid = false;
+            }
+
+            // 2. Validations spécifiques par champ (seulement si une valeur est présente ou si requis et vide)
+            if (id === 'udn') {
+                if (value) { 
+                    try {
+                        const birthDate = new Date(value);
+                        // Vérification supplémentaire de la validité de la date entrée par l'utilisateur.
+                        // new Date() peut interpréter des formats partiels, donc on vérifie.
+                        // Par exemple, si l'utilisateur tape "2023-15-01", birthDate deviendra "2024-03-01".
+                        // On s'assure que la date re-formatée correspond à l'entrée pour plus de robustesse.
+                        if (isNaN(birthDate.getTime()) || birthDate.toISOString().slice(0,10) !== value) {
+                             // Si la date n'est pas valide, la conversion échoue ou ne correspond pas
+                            throw new Error('Invalid date format or value');
+                        }
+
+                        const today = new Date();
+                        let age = today.getFullYear() - birthDate.getFullYear();
+                        const m = today.getMonth() - birthDate.getMonth();
+                        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                            age--;
+                        }
+                        data.age = age;
+
+                        if (isNaN(age) || age < 0) { // Normalement couvert par la validation de la date ci-dessus
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.udnInvalid);
+                            isValid = false;
+                        } else if (age < 18) {
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.udnAgeMinimum);
+                            isValid = false;
+                        }
+                    } catch (e) { // Attrape l'erreur de `new Date()` si format invalide ou notre `throw`
+                        displayFieldValidationError(id, FIELD_ERROR_MESSAGES.udnInvalid);
+                        isValid = false;
+                    }
+                } else if (element.required) {
+                    // L'erreur "champ requis" a déjà été affichée, on s'assure juste que isValid reste false
+                    // et on ne met pas d'autre message pour ne pas écraser le premier.
+                     if(isValid) { // Ne devrait pas arriver si genericFieldMissing a bien mis isValid à false
+                         displayFieldValidationError(id, FIELD_ERROR_MESSAGES.udnRequired); // Fallback
+                         isValid = false;
+                     }
+                }
+            } else if (numberFields.includes(id)) {
+                if (value) { 
+                    const numValue = parseFloat(value);
+                    if (isNaN(numValue)) {
+                        displayFieldValidationError(id, FIELD_ERROR_MESSAGES.mustBeNumber(label));
+                        isValid = false;
+                    } else {
+                        const min = parseFloat(element.min);
+                        const max = parseFloat(element.max);
+
+                        if (!isNaN(min) && numValue < min) {
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.minValue(label, min));
+                            isValid = false;
+                        }
+                        if (!isNaN(max) && numValue > max) {
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.maxValue(label, max));
+                            isValid = false;
+                        }
+                        if (id === 'uen' && !Number.isInteger(numValue)){ // Doit être un entier
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.mustBeInteger(label));
+                            isValid = false;
+                        }
+                        if (id === 'ufm' && numValue < 0) { // ufm spécifiquement >= 0
+                            displayFieldValidationError(id, FIELD_ERROR_MESSAGES.ufmPositive);
+                            isValid = false;
+                        }
+                        
+                        if(isValid) data[id] = numValue; // Stocker la valeur numérique seulement si toutes les validations pour ce champ sont passées
+                    }
+                } else if (element.required) {
+                    // Champ numérique requis mais vide. Erreur déjà gérée par "genericFieldMissing".
+                    // Assurer que isValid est false.
+                    isValid = false;
+                }
+            }
+            
+            // 3. Stocker la valeur brute pour les champs non numériques (comme les selects) 
+            //    ou si c'est un champ numérique valide mais pas encore stocké (si isValid est toujours true pour ce champ).
+            //    On ne stocke que si le champ n'a pas déjà causé une invalidation.
+            if (isValid && value && !data.hasOwnProperty(id) && !numberFields.includes(id)) { 
+                data[id] = value;
+            } else if (isValid && value && numberFields.includes(id) && data.hasOwnProperty(id)){
+                // Le nombre a déjà été stocké après parseFloat et validation, on ne fait rien ici.
+            } else if (!value && !element.required) {
+                // Champ non requis et vide, on ne stocke rien et ce n'est pas une erreur.
+                // Si c'est un nombre, on peut vouloir stocker 0 ou null selon la logique métier.
+                // Pour l'instant, on ne stocke que les valeurs entrées.
+                if(numberFields.includes(id) && element.value === "") { // element.value car value est trim()
+                    // Si un champ numérique optionnel est laissé vide, on pourrait le considérer comme 0 par défaut
+                    // data[id] = 0; // Décommentez et adaptez si c'est le comportement souhaité
+                }
+            }
+        });
+
+        if (!isValid) {
+            return null; 
+        }
+        
+        // Assurer que les données numériques par défaut (ex: uen=0) sont bien dans data si non modifiées mais valides.
+        // Cela est important si le calcul en aval s'attend à ces champs.
+        fieldIds.forEach(id => {
+            if (!data.hasOwnProperty(id)) {
+                const element = document.getElementById(id);
+                if (element && element.value) { // Si une valeur par défaut est dans le HTML
+                    if (numberFields.includes(id)) {
+                        const numVal = parseFloat(element.value);
+                        if (!isNaN(numVal)) data[id] = numVal;
+                    } else {
+                        data[id] = element.value;
+                    }
+                } else if (numberFields.includes(id) && element.defaultValue && !isNaN(parseFloat(element.defaultValue))) {
+                    // Cas pour les champs numériques avec defaultValue et qui n'ont pas été touchés
+                     data[id] = parseFloat(element.defaultValue);
+                } else if (id === 'uen' && !data.hasOwnProperty('uen')) { // Spécifiquement pour uen, s'il n'est pas rempli
+                    data.uen = 0; // Valeur par défaut si non rempli
+                }
+            }
+        });
+
+        data.utj_chf = data.utj; 
         return data;
     }
 
