@@ -55,7 +55,7 @@ h2, h3, h4 {
     }
 }
 
-@media (min-width: 992px) { /* Pour les écrans desktop plus larges */
+@media (min-width: 1200px) { /* Pour les écrans desktop plus larges - Ajusté de 1080px */
     .form-grid {
         grid-template-columns: repeat(4, 1fr); /* 4 colonnes */
     }
@@ -100,7 +100,7 @@ h2, h3, h4 {
 }
 
 #calculate-button:hover {
-    background-color: #e04a49; /* Assombrir légèrement la couleur primaire au survol */
+    background-color: #ff7f7e; /* Éclaircir la couleur primaire au survol */
 }
 
 #results-section {
