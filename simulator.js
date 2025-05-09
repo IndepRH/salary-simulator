@@ -325,6 +325,14 @@ document.addEventListener('DOMContentLoaded', () => {
         paidLeaveInfoElement.textContent = `Congés payés par an: ${paidLeaveDays.toLocaleString('en-US', { maximumFractionDigits: 1 })} jours`;
         // ---- FIN AJOUT POUR CONGES PAYES ----
 
+        // Canton fixed to GE in display
+        taxRateInfoSpan.textContent = ''; 
+        if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) { 
+            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`; 
+        } else if (inputs.usf === 'source') { 
+            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE) - Taux 0%/non trouvé.`; 
+        }
+
         // Display the user-defined target margin
         const userMarginPercentage = inputs.umr;
         exchangeRateInfoSpan.textContent = `Marge brute calculée: ${formatPercent(actualMargin, 2)} (Marge Cible: ${userMarginPercentage.toFixed(1)}%)`;
