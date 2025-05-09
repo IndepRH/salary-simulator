@@ -25,24 +25,29 @@
                     <option value="C">Marié(e) et les 2 conjoints travaillent</option>
                     <option value="H">Famille monoparentale</option>
                 </select>
+                <span class="error-message" id="uec-error"></span>
             </div>
             <div class="form-group">
                 <label for="udn">Date de naissance</label>
                 <input type="date" id="udn" name="udn" required>
+                <span class="error-message" id="udn-error"></span>
             </div>
             <div class="form-group">
                 <label for="uen">Nombre d'enfants à charge</label>
                 <input type="number" id="uen" name="uen" min="0" step="1" value="0" required>
+                <span class="error-message" id="uen-error"></span>
             </div>
 
             <!-- Row 2 -->
             <div class="form-group">
                 <label for="utp">Taux d'activité (en %)</label>
                 <input type="number" id="utp" name="utp" min="1" max="100" step="1" value="100" required>
+                <span class="error-message" id="utp-error"></span>
             </div>
              <div class="form-group">
                 <label for="utj">Votre facturation / jour (CHF)</label>
                 <input type="number" id="utj" name="utj" min="0" step="1" required>
+                <span class="error-message" id="utj-error"></span>
             </div>
 
 
@@ -50,17 +55,20 @@
             <div class="form-group">
                 <label for="ufm">Frais mensuels</label>
                 <input type="number" id="ufm" name="ufm" min="0" step="0.01" value="0" required>
+                <span class="error-message" id="ufm-error"></span>
             </div>
              <div class="form-group">
                 <label for="usf">Situation fiscale</label>
                 <select id="usf" name="usf">
-                    <option value="resident">Suisse, Résident Suisse</option>
+                    <option value="resident">Sans impôt à la source</option>
                     <option value="source">Avec impôt à la source (Genève)</option>
                 </select>
+                <span class="error-message" id="usf-error"></span>
             </div>
             <div class="form-group">
                 <label for="umr">Commission portage (en %)</label>
                 <input type="number" id="umr" name="umr" min="0" max="100" step="0.1" value="5" required>
+                <span class="error-message" id="umr-error"></span>
             </div>
              <!-- LPP Option Removed -->
 
@@ -136,8 +144,8 @@
         <h3>Informations importantes</h3>
 
         <p style="margin-bottom: 15px;">Ces montants sont donnés à titre indicatif (non contractuels) ; ils peuvent être adaptés en fonction de différents critères (niveau d'intervention d'Indep-RH, volume, conditions de paiement du client, frais de déplacements,...)</p>
-        <p style="margin-top: 15px;">Le statut de salarié vous permet, le cas échéant, d'ouvrir des droits au chômage (suisse si résident suisse ou français si frontalier français) à la fin de la mission.</p>
-        <p style="margin-top: 10px;">Veuillez noter qu'indep-rh se charge de toutes les formalités administratives, en particulier la demande de permis de travail si nécessaire.</p>
+        <p style="margin-bottom: 15px;">Le statut de salarié vous permet, le cas échéant, d'ouvrir des droits au chômage (suisse si résident suisse ou français si frontalier français) à la fin de la mission.</p>
+        <p style="margin-bottom: 15px;">Veuillez noter qu'indep-rh se charge de toutes les formalités administratives, en particulier la demande de permis de travail si nécessaire.</p>
     </div>
 
 </div>

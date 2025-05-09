@@ -131,12 +131,6 @@ td:nth-child(n+2) { /* Align numbers to the right */
     text-align: right;
 }
 
-#payslip-table td:nth-child(3), /* Taux Employee */
-#payslip-table td:nth-child(5) /* Taux Employer */
-{
-    text-align: center;
-}
-
 #tax-info {
     font-size: 0.9em;
     color: var(--text-light);
@@ -155,6 +149,18 @@ td:nth-child(n+2) { /* Align numbers to the right */
 #calculation-error {
     font-weight: bold;
     color: var(--primary-color); /* Erreur en couleur primaire */
+}
+
+.error-message {
+    color: var(--primary-color);
+    font-size: 0.85em;
+    margin-top: 4px;
+    display: none; /* Caché par défaut, affiché par JS si erreur */
+}
+
+input.invalid,
+select.invalid {
+    border-color: var(--primary-color) !important; /* Marquer les champs invalides */
 }
 
 /* Responsive Design */
