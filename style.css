@@ -55,7 +55,7 @@ h2, h3, h4 {
     }
 }
 
-@media (min-width: 992px) { /* Pour les écrans desktop plus larges */
+@media (min-width: 1080px) { /* Pour les écrans desktop plus larges - Ajusté de 992px */
     .form-grid {
         grid-template-columns: repeat(4, 1fr); /* 4 colonnes */
     }
