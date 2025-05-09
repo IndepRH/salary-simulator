@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const calculateButton = document.getElementById('calculate-button');
     const resultsSection = document.getElementById('results-section');
     const usfSelect = document.getElementById('usf');
-    const payslipTableBody = document.getElementById('payslip-table').querySelector('tbody');
+    // const payslipTableBody = document.getElementById('payslip-table').querySelector('tbody'); // Commenté car le tableau n'est plus dans le HTML
     const errorDiv = document.getElementById('calculation-error');
     const taxInfoDiv = document.getElementById('tax-info');
     const taxRateInfoSpan = document.getElementById('tax-rate-info');
@@ -325,16 +325,33 @@ document.addEventListener('DOMContentLoaded', () => {
         paidLeaveInfoElement.textContent = `Congés payés par an: ${paidLeaveDays.toLocaleString('en-US', { maximumFractionDigits: 1 })} jours`;
         // ---- FIN AJOUT POUR CONGES PAYES ----
 
-        // Canton fixed to GE in display
-        taxRateInfoSpan.textContent = ''; if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) { taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`; } else if (inputs.usf === 'source') { taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE) - Taux 0%/non trouvé.`; }
         // Display the user-defined target margin
         const userMarginPercentage = inputs.umr;
         exchangeRateInfoSpan.textContent = `Marge brute calculée: ${formatPercent(actualMargin, 2)} (Marge Cible: ${userMarginPercentage.toFixed(1)}%)`;
 
-        payslipTableBody.innerHTML = ''; const deductionOrder = ['T01', 'T02', 'T03', 'T04', 'T05', 'T06', 'T07', 'T08', 'T09', 'T11', 'T12', 'F01', 'T10', 'TAX'];
-        deductionOrder.forEach(id => { const detail = deductions.details[id]; if (!detail) { return; } const alwaysShow = ['T11', 'T12', 'TAX', 'T03', 'F01', 'T10']; if (detail.emplAmount === 0 && detail.emprAmount === 0 && !alwaysShow.includes(id)) { return; }
-            const row = payslipTableBody.insertRow(); row.insertCell().textContent = detail.name; row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatCHF(detail.base / 12); row.insertCell().textContent = formatPercent(detail.emplRate); row.insertCell().textContent = formatCHF(detail.emplAmount / 12); row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatPercent(detail.emprRate); row.insertCell().textContent = formatCHF(detail.emprAmount / 12); });
-        const totalRow = payslipTableBody.insertRow(); totalRow.style.fontWeight = 'bold'; totalRow.insertCell().textContent = 'Total Déductions'; totalRow.insertCell().textContent = ''; totalRow.insertCell().textContent = ''; totalRow.insertCell().textContent = formatCHF(deductions.totalEmployeeAnnual / 12); totalRow.insertCell().textContent = ''; totalRow.insertCell().textContent = formatCHF(deductions.totalEmployerAnnual / 12);
+        // payslipTableBody.innerHTML = ''; // Commenté car le tableau n'est plus affiché
+        // const deductionOrder = ['T01', 'T02', 'T03', 'T04', 'T05', 'T06', 'T07', 'T08', 'T09', 'T11', 'T12', 'F01', 'T10', 'TAX'];
+        // deductionOrder.forEach(id => { 
+        //     const detail = deductions.details[id]; 
+        //     if (!detail) { return; } 
+        //     const alwaysShow = ['T11', 'T12', 'TAX', 'T03', 'F01', 'T10']; 
+        //     if (detail.emplAmount === 0 && detail.emprAmount === 0 && !alwaysShow.includes(id)) { return; } // Ne pas afficher si montants nuls et pas dans alwaysShow
+        //     const row = payslipTableBody.insertRow(); 
+        //     row.insertCell().textContent = detail.name; 
+        //     row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatCHF(detail.base / 12); 
+        //     row.insertCell().textContent = formatPercent(detail.emplRate); 
+        //     row.insertCell().textContent = formatCHF(detail.emplAmount / 12); 
+        //     row.insertCell().textContent = (id === 'F01') ? 'N/A' : formatPercent(detail.emprRate); 
+        //     row.insertCell().textContent = formatCHF(detail.emprAmount / 12); 
+        // });
+        // const totalRow = payslipTableBody.insertRow(); 
+        // totalRow.style.fontWeight = 'bold'; 
+        // totalRow.insertCell().textContent = 'Total Déductions'; 
+        // totalRow.insertCell().textContent = ''; 
+        // totalRow.insertCell().textContent = ''; 
+        // totalRow.insertCell().textContent = formatCHF(deductions.totalEmployeeAnnual / 12); 
+        // totalRow.insertCell().textContent = ''; 
+        // totalRow.insertCell().textContent = formatCHF(deductions.totalEmployerAnnual / 12);
     }
 
 }); // Fin du DOMContentLoaded
