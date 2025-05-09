@@ -140,6 +140,16 @@ td:nth-child(n+2) { /* Align numbers to the right */
 #tax-info {
     font-size: 0.9em;
     color: var(--text-light);
+    margin-top: 15px; /* Ajout d'un peu d'espace au-dessus */
+}
+
+#tax-info > * { /* Cible tous les enfants directs de #tax-info */
+    display: block; /* Chaque information sur sa propre ligne */
+    margin-bottom: 5px; /* Espacement entre les lignes d'info */
+}
+
+#tax-info > *:last-child { /* Cible le dernier enfant direct */
+    margin-bottom: 0; /* Pas de marge en bas pour le dernier élément */
 }
 
 #calculation-error {
