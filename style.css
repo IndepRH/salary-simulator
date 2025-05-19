@@ -14,7 +14,7 @@ body {
     font-family: 'Gabarito', sans-serif; /* Nouvelle police */
     line-height: 1.6;
     margin: 0; /* Enlever marge par défaut */
-    padding: 20px; /* Ajouter padding global */
+    padding: 0; /* MODIFIÉ: Supprimer ou mettre à 0 le padding global */
     background-color: var(--background-light); /* Utilisation variable */
     color: var(--text-color); /* Couleur texte par défaut */
 }
