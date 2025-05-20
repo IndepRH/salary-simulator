@@ -173,7 +173,7 @@ select.invalid {
 
 @media (max-width: 768px) {
     body {
-        padding: 10px; /* Reduce body padding */
+        padding: 0; /* Supprimer le padding pour le body sur mobile */
     }
 
     #salary-simulator {
