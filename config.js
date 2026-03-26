@@ -1,5 +1,5 @@
 // config.js - Configuration Data
-// IMPORTANT: Update these values regularly! Contains 2025 LPP values.
+// IMPORTANT: Update these values regularly! Contains 2026 values.
 
 const CONFIG = {
     // Days (Jours)
@@ -20,31 +20,32 @@ const CONFIG = {
         { age_start: 25, rate: 0.07 }, // TR2
         { age_start: 35, rate: 0.10 }, // TR3
         { age_start: 45, rate: 0.15 }, // TR4
-        { age_start: 55, rate: 0.18 }  // TR5
+        { age_start: 55, rate: 0.18 }, // TR5
+        { age_start: 65, rate: 0.00 }  // TR6 - Retraite
     ],
 
-    // Min/Max Amounts (Montants mini et maxi) - Annual CHF (Valeurs LPP 2025)
-    M01: 90720.00,  // Plafond LPP (2025)
-    M02: 26460.00,  // Coordination Deduction LPP (2025)
-    M03: 22680.00,  // Seuil déclenchement LPP (2025)
-    M04: 148200.00, // Plafond AC / LAA - Vérifier si change pour 2025
+    // Min/Max Amounts (Montants mini et maxi) - Annual CHF (Valeurs LPP 2026)
+    M01: 90720.00,  // Plafond LPP (2026 — inchangé)
+    M02: 26460.00,  // Coordination Deduction LPP (2026 — inchangé)
+    M03: 22680.00,  // Seuil déclenchement LPP (2026 — inchangé)
+    M04: 148200.00, // Plafond AC / LAA (2026 — inchangé)
 
     // Base Rates (Taux de base) - Annual
     T01: { name: "AVS/AI/APG",         empl: 0.05300, empr: 0.05300, baseRule: 'sba' },
     T02: { name: "Chômage",            empl: 0.01100, empr: 0.01100, baseRule: 'min(sba, M04)' },
-    T03: { name: "Allocations familiales", empl: 0.00000, empr: 0.02250, baseRule: 'sba' }, // GE Rate?
-    T04: { name: "Maternité (GE)",     empl: 0.00032, empr: 0.00032, baseRule: 'sba' }, // GE Rate?
-    T05: { name: "Contribution LSAPE", empl: 0.00000, empr: 0.001350, baseRule: 'sba' },
+    T03: { name: "Allocations familiales", empl: 0.00000, empr: 0.02220, baseRule: 'sba' }, // GE 2026 (était 2.25% en 2025)
+    T04: { name: "Maternité (GE)",     empl: 0.00029, empr: 0.00029, baseRule: 'sba' }, // GE 2026 (était 0.032% en 2025)
+    T05: { name: "Contribution LSAPE et FFPC", empl: 0.00000, empr: 0.001350, baseRule: 'sba' }, // 2026: LSAPE 0.135% + FFPC 0.065% = 0.200%
     T06: { name: "Frais administratifs AVS", empl: 0.00000, empr: 0.00200, baseRule: 'sba' }, // Simplification
-    T07: { name: "LAA non professionnelle", empl: 0.00000, empr: 0.00730, baseRule: 'min(sba, M04)' }, // Charge employeur
-    T08: { name: "LAA professionnelle",   empl: 0.00000, empr: 0.001092, baseRule: 'min(sba, M04)' }, // Taux corrigé
+    T07: { name: "LAA non professionnelle", empl: 0.00000, empr: 0.00630, baseRule: 'min(sba, M04)' }, // Catégorie Q Finance 2026 (était 0.73% cat. P)
+    T08: { name: "LAA professionnelle",   empl: 0.00000, empr: 0.000476, baseRule: 'min(sba, M04)' }, // Catégorie Q Finance 2026 (était 0.1092% cat. P)
     T09: { name: "Assurance IJM (APG Maladie)", empl: 0.00000, empr: 0.03660, baseRule: 'min(sba, M04)' }, // Example rate
     T10: { name: "Formation / CCT",    empl: 0.00000, empr: 0.00800, baseRule: 'min(sba, M04)' }, // Taux -> 0 si SBA>M04 (géré in JS)
 
     // LPP Taux employé de 3% SI l'option N'EST PAS Standard
     T11: { name: "LPP Épargne Complément", empl: 0.03000, empr: 0.00000, baseRule: 'lppCoord', condition: 'uof !== "Standard"' },
 
-    T12: { name: "LPP Risque",         empl: 0.00000, empr: 0.01200, baseRule: 'lppCoord' },
+    T12: { name: "LPP Risque",         empl: 0.00000, empr: 0.01240, baseRule: 'lppCoord' }, // 2026 (était 1.2% en 2025)
 
     // Withholding Tax - Placeholder
     WITHHOLDING_TAX: { /* ... (structure existante) ... */ },
