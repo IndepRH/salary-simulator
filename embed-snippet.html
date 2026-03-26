@@ -1,0 +1,135 @@
+<div id="salary-simulator">
+    <h2>Calculez votre rémunération nette</h2>
+
+    <form id="simulator-form">
+        <div class="form-grid">
+            <div class="form-group">
+                <label for="uec">État civil</label>
+                <select id="uec" name="uec">
+                    <option value="A">Personne seule</option>
+                    <option value="B">Marié(e) et le conjoint ne travaille pas</option>
+                    <option value="C">Marié(e) et les 2 conjoints travaillent</option>
+                    <option value="H">Famille monoparentale</option>
+                </select>
+                <span class="error-message" id="uec-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="udn">Date de naissance</label>
+                <input type="date" id="udn" name="udn" required>
+                <span class="error-message" id="udn-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="uen">Nombre d'enfants à charge</label>
+                <input type="number" id="uen" name="uen" min="0" step="1" value="0" required>
+                <span class="error-message" id="uen-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="utp">Taux d'activité (en %)</label>
+                <input type="number" id="utp" name="utp" min="1" max="100" step="1" value="100" required>
+                <span class="error-message" id="utp-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="utj">Votre facturation / jour (CHF)</label>
+                <input type="number" id="utj" name="utj" min="0" step="1" required>
+                <span class="error-message" id="utj-error"></span>
+            </div>
+
+            <div class="form-group">
+                <label for="ufm">Frais mensuels</label>
+                <input type="number" id="ufm" name="ufm" min="0" step="0.01" value="0" required>
+                <span class="error-message" id="ufm-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="usf">Situation fiscale</label>
+                <select id="usf" name="usf">
+                    <option value="resident">Sans impôt à la source</option>
+                    <option value="source">Avec impôt à la source (Genève)</option>
+                </select>
+                <span class="error-message" id="usf-error"></span>
+            </div>
+            <div class="form-group">
+                <label for="umr">Commission portage (en %)</label>
+                <input type="number" id="umr" name="umr" min="0" max="100" step="0.1" value="5" required>
+                <span class="error-message" id="umr-error"></span>
+            </div>
+        </div>
+
+        <button type="button" id="calculate-button">Calculer ma simulation</button>
+    </form>
+
+    <div id="results-section" style="display: none;">
+        <div id="senior-notice" class="info-notice" style="display: none;">
+            <p class="info-notice-title">Simulation indicative pour les 65 ans et plus</p>
+            <p>À partir de 65 ans, certaines règles de calcul évoluent. Le résultat affiché ici doit donc être considéré comme une estimation.</p>
+            <p>Pour obtenir une simulation précise et adaptée à votre situation, nous vous invitons à nous contacter directement.</p>
+        </div>
+
+        <h3>Simulation de salaire (en CHF)</h3>
+        <div class="table-responsive-wrapper">
+            <table id="summary-table">
+                <thead>
+                    <tr>
+                        <th>Rubrique</th>
+                        <th>Annuel</th>
+                        <th>Mensuel</th>
+                        <th>Journalier</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Salaire brut</td>
+                        <td id="result-sba-annual"></td>
+                        <td id="result-sba-monthly"></td>
+                        <td id="result-sba-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Salaire net avant impôts</td>
+                        <td id="result-net-annual"></td>
+                        <td id="result-net-monthly"></td>
+                        <td id="result-net-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Pour information, Épargne LPP</td>
+                        <td id="result-lpp-saving-annual"></td>
+                        <td id="result-lpp-saving-monthly"></td>
+                        <td id="result-lpp-saving-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Frais</td>
+                        <td id="result-ufm-annual"></td>
+                        <td id="result-ufm-monthly"></td>
+                        <td id="result-ufm-daily"></td>
+                    </tr>
+                    <tr>
+                        <td id="label-payout">Paiement Consultant (après impôts & frais inclus)</td>
+                        <td id="result-payout-annual"></td>
+                        <td id="result-payout-monthly"></td>
+                        <td id="result-payout-daily"></td>
+                    </tr>
+                    <tr>
+                        <td>Prix de revient (Coût employeur)</td>
+                        <td id="result-prs-annual"></td>
+                        <td id="result-prs-monthly"></td>
+                        <td id="result-prs-daily"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div id="tax-info" style="margin-top: 10px; font-style: italic;">
+            <span id="tax-rate-info"></span>
+            <span id="exchange-rate-info"></span>
+        </div>
+
+        <div id="calculation-error" style="color: red; margin-top: 15px;"></div>
+    </div>
+
+    <div id="additional-info-section" style="margin-top: 40px; padding-top: 20px; border-top: 1px solid #eee; display: none;">
+        <h3>Informations importantes</h3>
+
+        <p style="margin-bottom: 15px;">Ces montants sont donnés à titre indicatif (non contractuels) ; ils peuvent être adaptés en fonction de différents critères (niveau d'intervention d'Indep-RH, volume, conditions de paiement du client, frais de déplacements,...)</p>
+        <p style="margin-bottom: 15px;">Le statut de salarié vous permet, le cas échéant, d'ouvrir des droits au chômage (suisse si résident suisse ou français si frontalier français) à la fin de la mission.</p>
+        <p style="margin-bottom: 15px;">Veuillez noter qu'indep-rh se charge de toutes les formalités administratives, en particulier la demande de permis de travail si nécessaire.</p>
+    </div>
+</div>

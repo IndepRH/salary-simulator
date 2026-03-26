@@ -109,6 +109,29 @@
     border-top: 1px solid #eee;
 }
 
+.info-notice {
+    margin-bottom: 24px;
+    padding: 18px 20px;
+    border: 1px solid #f1c27d;
+    border-radius: 8px;
+    background-color: #fff4df;
+}
+
+.info-notice-title {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--dark-bg);
+}
+
+.info-notice p {
+    margin: 0;
+}
+
+.info-notice p + p {
+    margin-top: 8px;
+}
+
 #salary-simulator table {
     width: 100%;
     border-collapse: collapse;
@@ -177,15 +200,15 @@ select.invalid {
         padding: 15px; /* Reduce card padding */
     }
 
-    h2 {
+    #salary-simulator h2 {
         font-size: 1.5rem; /* Slightly smaller main title */
     }
 
-    h3 {
+    #salary-simulator h3 {
         font-size: 1.3rem;
     }
 
-    h4 {
+    #salary-simulator h4 {
         font-size: 1.1rem;
     }
 
@@ -202,13 +225,13 @@ select.invalid {
 }
 
 @media (max-width: 480px) {
-    h2 {
+    #salary-simulator h2 {
         font-size: 1.3rem;
     }
-    h3 {
+    #salary-simulator h3 {
         font-size: 1.1rem;
     }
-    h4 {
+    #salary-simulator h4 {
         font-size: 1rem;
     }
     #salary-simulator .table-responsive-wrapper table {

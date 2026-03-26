@@ -13,6 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taxRateInfoSpan = document.getElementById('tax-rate-info');
     const exchangeRateInfoSpan = document.getElementById('exchange-rate-info');
     const additionalInfoSection = document.getElementById('additional-info-section');
+    const seniorNotice = document.getElementById('senior-notice');
 
     const fieldIds = ['uec', 'udn', 'uen', 'utp', 'utj', 'ufm', 'usf', 'umr'];
 
@@ -57,6 +58,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    function updateSeniorNotice(age) {
+        if (!seniorNotice) {
+            return;
+        }
+        seniorNotice.style.display = age >= 65 ? 'block' : 'none';
+    }
+
     // Fonction utilitaire pour calculer le CA annuel
     function calculateAnnualTurnover(inputs) {
          const workingDays = CONFIG.J01 - CONFIG.J02;
@@ -69,6 +77,7 @@ document.addEventListener('DOMContentLoaded', () => {
         errorDiv.textContent = '';
         resultsSection.style.display = 'none';
         additionalInfoSection.style.display = 'none';
+        updateSeniorNotice(0);
 
         const inputs = getInputs();
         if (!inputs) {
@@ -101,6 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { finalSBA, finalDeductions, iterations, converged } = findSBA(targetSalaryCost, inputs);
 
             if (converged && finalSBA != null && finalDeductions) {
+                updateSeniorNotice(inputs.age);
                 displayResults(finalSBA, finalDeductions, inputs, annualTurnover, annualExpenses);
                 resultsSection.style.display = 'block';
                 additionalInfoSection.style.display = 'block';
@@ -113,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             errorDiv.textContent = `Erreur lors du calcul : ${error.message}`;
             resultsSection.style.display = 'none';
             additionalInfoSection.style.display = 'none';
+            updateSeniorNotice(0);
         }
     }
 
