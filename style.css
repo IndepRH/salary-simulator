@@ -10,22 +10,20 @@
     --table-header-bg: #f2f2f2; /* Fond en-tête tableau (peut être changé) */
 }
 
-body {
+#salary-simulator {
     font-family: 'Gabarito', sans-serif; /* Nouvelle police */
     line-height: 1.6;
-    margin: 0; /* Enlever marge par défaut */
-    padding: 0; /* MODIFIÉ: Supprimer ou mettre à 0 le padding global */
-    background-color: var(--background-light); /* Utilisation variable */
     color: var(--text-color); /* Couleur texte par défaut */
-}
-
-#salary-simulator {
     background-color: #fff; /* Garder blanc pour la carte principale */
     padding: 25px;
     border-radius: 8px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     max-width: 100%; /* Permettre au simulateur de prendre toute la largeur disponible */
     margin: 0; /* Ajuster la marge si nécessaire, ou la laisser à auto si le parent gère le centrage */
+}
+
+#salary-simulator * {
+    box-sizing: border-box;
 }
 
 #simulator-form { /* Nouveau style pour le formulaire */
@@ -35,7 +33,9 @@ body {
     /* margin-bottom: 25px;  /* Le bouton est après le grid, donc le margin-bottom du grid est ok */
 }
 
-h2, h3, h4 {
+#salary-simulator h2,
+#salary-simulator h3,
+#salary-simulator h4 {
     color: var(--dark-bg); /* Utiliser le bleu nuit pour les titres */
     text-align: center;
     margin-bottom: 20px;
@@ -109,25 +109,26 @@ h2, h3, h4 {
     border-top: 1px solid #eee;
 }
 
-table {
+#salary-simulator table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 15px;
 }
 
-th, td {
+#salary-simulator th,
+#salary-simulator td {
     border: 1px solid var(--border-color);
     padding: 8px;
     text-align: left;
 }
 
-th {
+#salary-simulator th {
     background-color: var(--secondary-color); /* Utiliser le rose pâle pour l'en-tête */
     font-weight: bold;
     color: var(--dark-bg); /* Texte foncé sur fond pâle */
 }
 
-td:nth-child(n+2) { /* Align numbers to the right */
+#salary-simulator td:nth-child(n+2) { /* Align numbers to the right */
     text-align: right;
 }
 
@@ -172,10 +173,6 @@ select.invalid {
 }
 
 @media (max-width: 768px) {
-    body {
-        padding: 0; /* Supprimer le padding pour le body sur mobile */
-    }
-
     #salary-simulator {
         padding: 15px; /* Reduce card padding */
     }
@@ -198,7 +195,7 @@ select.invalid {
     }
 
     /* Ensure tables within the wrapper don't force width unnecessarily */
-    .table-responsive-wrapper table {
+    #salary-simulator .table-responsive-wrapper table {
         min-width: 600px; /* Example: Set a min-width if content requires it */
         /* Adjust min-width based on your table content to ensure readability */
     }
@@ -214,7 +211,7 @@ select.invalid {
     h4 {
         font-size: 1rem;
     }
-    .table-responsive-wrapper table {
+    #salary-simulator .table-responsive-wrapper table {
         min-width: 500px; /* Further adjust for very small screens if needed */
     }
 

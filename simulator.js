@@ -429,7 +429,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Fonction de recherche du taux IS (synchrone, avec arrondi)
     function getWithholdingTaxRate(canton, bareme, monthlyGross) {
-        const year = new Date().getFullYear().toString();
+        const year = (typeof TAX_DATA_YEAR !== 'undefined') ? TAX_DATA_YEAR : new Date().getFullYear().toString();
         // console.log(`Lookup tax: Year=${year}, Canton=${canton}, Bareme=${bareme}, Income=${monthlyGross.toFixed(5)}`);
 
         const roundedMonthlyGross = parseFloat(monthlyGross.toFixed(2)); // Arrondi
@@ -501,11 +501,14 @@ document.addEventListener('DOMContentLoaded', () => {
         paidLeaveInfoElement.textContent = `Congés payés par an: ${paidLeaveDays.toLocaleString('en-US', { maximumFractionDigits: 1 })} jours`;
         // ---- FIN AJOUT POUR CONGES PAYES ----
 
-        taxRateInfoSpan.textContent = ''; 
-        if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) { 
-            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`; 
-        } else if (inputs.usf === 'source') { 
-            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE) - Taux 0%/non trouvé.`; 
+        const taxYear = (typeof TAX_DATA_YEAR !== 'undefined') ? TAX_DATA_YEAR : new Date().getFullYear().toString();
+        taxRateInfoSpan.textContent = '';
+        if (inputs.usf === 'source' && deductions.withholdingTaxRate > 0) {
+            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE ${taxYear}), Taux: ${formatPercent(deductions.withholdingTaxRate)}.`;
+        } else if (inputs.usf === 'source') {
+            taxRateInfoSpan.textContent = `Impôts: Barème ${deductions.withholdingTaxBarème} (GE ${taxYear}) - Taux 0%/non trouvé.`;
+        } else {
+            taxRateInfoSpan.textContent = `Barème d'impôt à la source: Genève ${taxYear}.`;
         }
 
         const userMarginPercentage = inputs.umr;
